@@ -35,8 +35,8 @@ class EditableWebEngineView(QWebEngineView):  # html window
         </html>
         """
 
-    def setHtmlContent(self, html_content):  # set html
+    def setHtmlContent(self, html_content):
         self.setHtml(self.generate_full_html(html_content))
 
-    def export_to_pdf(self, file_path):  # export html to pdf
+    def export_to_pdf(self, file_path):
         self.page().printToPdf(file_path)

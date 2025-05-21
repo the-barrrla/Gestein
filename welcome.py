@@ -1,25 +1,19 @@
 import json
 import os
 
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QLabel, QPushButton, QFileDialog, QWidget
-
+from PyQt6.uic import loadUi
 from editor import MarkdownEditor
 
 
 class ProjectSelectionWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Выбор папки проекта")
-        self.setGeometry(100, 100, 400, 200)
-        self.widget = QWidget()
-        self.setCentralWidget(self.widget)
-        layout = QVBoxLayout()
-        self.folder_label = QLabel("Папка проекта не выбрана.")
-        layout.addWidget(self.folder_label)
-        self.select_button = QPushButton("Выбрать папку проекта")
-        layout.addWidget(self.select_button)
-        self.select_button.clicked.connect(self.select_project_folder)
-        self.widget.setLayout(layout)
+        loadUi("select.ui", self)
+        self.setWindowTitle("Добро пожаловать!")
+        self.setWindowIcon(QIcon('icon.png'))
+        self.selectButton.clicked.connect(self.select_project_folder)
 
     def select_project_folder(self):
         desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")

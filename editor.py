@@ -4,6 +4,7 @@ import re
 
 import markdown
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMainWindow, QListWidget, QTreeWidgetItem, QMenu, QInputDialog, QMessageBox, QFileDialog
 from PyQt6.uic import loadUi
 
@@ -15,6 +16,7 @@ class MarkdownEditor(QMainWindow):
         super().__init__()
         loadUi("main.ui", self)
         self.setWindowTitle("Gestein")
+        self.setWindowIcon(QIcon('icon.png'))
         self.current_dir_path = path
         self.recent_files = []
 

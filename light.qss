@@ -1,0 +1,64 @@
+/* Светлая тема для всего приложения */
+QWidget {
+    background-color: #ffffff;
+    color: #333333;
+    font-family: Optima, "Segoe UI", Arial, sans-serif;
+}
+
+/* Кнопки */
+QPushButton {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+QPushButton:hover {
+    background-color: #ff8787;
+}
+
+QPushButton:pressed {
+    background-color: #fa5252;
+}
+
+/* Текстовые поля */
+QTextEdit, QPlainTextEdit {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    font-family: "DejaVu Sans Mono", monospace;
+    font-size: 10pt;
+    color: #222222;
+}
+
+/* Меню */
+QMenuBar {
+    background-color: #ffffff;
+}
+
+QMenu {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+QMenu::item:selected {
+    background-color: #fff5f5;
+    color: #ff6b6b;
+}
+
+/* ScrollBar вертикальный */
+QScrollBar:vertical {
+    background: #f0f0f0;
+    width: 10px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #ced4da;
+    border-radius: 5px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #ff6b6b;
+}

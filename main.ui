@@ -67,6 +67,11 @@
           <property name="styleSheet">
            <string notr="true">QWidget {border: 1px solid #000000;border-radius: 3px;}</string>
           </property>
+          <column>
+           <property name="text">
+            <string notr="true">1</string>
+           </property>
+          </column>
          </widget>
         </item>
        </layout>
@@ -174,7 +179,7 @@
      <x>0</x>
      <y>0</y>
      <width>1121</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -400,7 +405,7 @@
   <customwidget>
    <class>EditableWebEngineView</class>
    <extends>QWidget</extends>
-   <header>test</header>
+   <header location="global">editablewebengineview.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
