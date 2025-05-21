@@ -63,39 +63,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QScrollArea" name="scrollArea">
-          <property name="minimumSize">
-           <size>
-            <width>150</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>250</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="baseSize">
-           <size>
-            <width>150</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>248</width>
-             <height>684</height>
-            </rect>
-           </property>
-          </widget>
-         </widget>
+         <widget class="QTreeWidget" name="treeWidget"/>
         </item>
        </layout>
       </widget>
@@ -196,7 +164,7 @@
      <x>0</x>
      <y>0</y>
      <width>1121</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -206,7 +174,6 @@
     <addaction name="actionNewFile"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
-    <addaction name="actionSave_As"/>
     <addaction name="separator"/>
     <addaction name="actionPDF"/>
    </widget>
@@ -232,6 +199,9 @@
     <addaction name="actionPaste"/>
     <addaction name="separator"/>
     <addaction name="menuSet_Header"/>
+    <addaction name="separator"/>
+    <addaction name="actionBold"/>
+    <addaction name="actionItalic"/>
    </widget>
    <widget class="QMenu" name="menuAppearance">
     <property name="title">
@@ -251,8 +221,6 @@
     <addaction name="separator"/>
     <addaction name="menuFont_Size"/>
     <addaction name="separator"/>
-    <addaction name="actionBold"/>
-    <addaction name="actionItalic"/>
     <addaction name="actionUnderline"/>
     <addaction name="actionSetColor"/>
     <addaction name="separator"/>
@@ -364,12 +332,12 @@
     <string>Export to PDF</string>
    </property>
   </action>
-  <action name="actionBold">
+  <action name="actionBold2">
    <property name="text">
     <string>Bold</string>
    </property>
   </action>
-  <action name="actionItalic">
+  <action name="actionItalic2">
    <property name="text">
     <string>Italic</string>
    </property>
@@ -412,6 +380,16 @@
   <action name="actionHeader6">
    <property name="text">
     <string>Header 6</string>
+   </property>
+  </action>
+  <action name="actionBold">
+   <property name="text">
+    <string>Bold</string>
+   </property>
+  </action>
+  <action name="actionItalic">
+   <property name="text">
+    <string>Italic</string>
    </property>
   </action>
  </widget>
