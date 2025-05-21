@@ -63,7 +63,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QTreeWidget" name="treeWidget"/>
+         <widget class="QTreeWidget" name="treeWidget">
+          <property name="styleSheet">
+           <string notr="true">QWidget {border: 1px solid #000000;border-radius: 3px;}</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -98,6 +102,9 @@
             <bold>false</bold>
             <underline>false</underline>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QWidget {border: 1px solid #000000;border-radius: 1px;}</string>
           </property>
           <property name="undoRedoEnabled">
            <bool>true</bool>
@@ -150,6 +157,9 @@
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
+          <property name="styleSheet">
+           <string notr="true">QWidget {border: 1px solid #000000;border-radius: 1px;}</string>
+          </property>
          </widget>
         </item>
        </layout>
@@ -164,7 +174,7 @@
      <x>0</x>
      <y>0</y>
      <width>1121</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -199,9 +209,6 @@
     <addaction name="actionPaste"/>
     <addaction name="separator"/>
     <addaction name="menuSet_Header"/>
-    <addaction name="separator"/>
-    <addaction name="actionBold"/>
-    <addaction name="actionItalic"/>
    </widget>
    <widget class="QMenu" name="menuAppearance">
     <property name="title">
@@ -221,8 +228,8 @@
     <addaction name="separator"/>
     <addaction name="menuFont_Size"/>
     <addaction name="separator"/>
-    <addaction name="actionUnderline"/>
-    <addaction name="actionSetColor"/>
+    <addaction name="actionBold"/>
+    <addaction name="actionItalic"/>
     <addaction name="separator"/>
    </widget>
    <addaction name="menuFile"/>
@@ -332,14 +339,20 @@
     <string>Export to PDF</string>
    </property>
   </action>
-  <action name="actionBold2">
+  <action name="actionBold">
    <property name="text">
     <string>Bold</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
   </action>
-  <action name="actionItalic2">
+  <action name="actionItalic">
    <property name="text">
     <string>Italic</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="actionUnderline">
@@ -380,16 +393,6 @@
   <action name="actionHeader6">
    <property name="text">
     <string>Header 6</string>
-   </property>
-  </action>
-  <action name="actionBold">
-   <property name="text">
-    <string>Bold</string>
-   </property>
-  </action>
-  <action name="actionItalic">
-   <property name="text">
-    <string>Italic</string>
    </property>
   </action>
  </widget>

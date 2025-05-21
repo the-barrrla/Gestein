@@ -147,7 +147,6 @@ class MarkdownEditor(QMainWindow):
         self.watcher.start()
 
 
-        # self.actionNewFile.triggered.connect(self.create_new_file)
         self.actionOpen.triggered.connect(self.load_dir)
         self.actionSave.triggered.connect(self.save_markdown_file)
         self.actionPDF.triggered.connect(self.export_to_pdf)
@@ -160,6 +159,8 @@ class MarkdownEditor(QMainWindow):
         self.actionHeader4.triggered.connect(lambda: self.insert_heading(4))
         self.actionHeader5.triggered.connect(lambda: self.insert_heading(5))
         self.actionHeader6.triggered.connect(lambda: self.insert_heading(6))
+
+
 
 
         self.textEdit.textChanged.connect(self.update_preview)
@@ -211,6 +212,8 @@ class MarkdownEditor(QMainWindow):
         item = self.treeWidget.itemAt(position)
         if not item:
             return
+
+
         item_path = item.toolTip(0)
         if not os.path.isdir(item_path):
             return
@@ -272,6 +275,7 @@ class MarkdownEditor(QMainWindow):
                 self.textEdit.setReadOnly(False)
                 self.textEdit.setPlaceholderText("Введите текст здесь...")
                 self.setWindowTitle(f"Gestein - {os.path.basename(file_path)}")
+
             config_path = "config.json"
             if os.path.exists(config_path):
                 with open(config_path, "r", encoding="utf-8") as f:
@@ -303,38 +307,50 @@ class MarkdownEditor(QMainWindow):
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
+        try:
+            self.textEdit.clear()
+            print('dir', folder_path)
+            self.build_project_tree(folder_path)
+            self.setWindowTitle("Gestein")
+            self.current_file_path = None
+            self.textEdit.setPlaceholderText("Выберите файл для редактирования")
+            self.textEdit.setReadOnly(True)
 
-        self.textEdit.clear()
-        print('dir', folder_path)
-        self.build_project_tree(folder_path)
-        self.setWindowTitle("Gestein")
-        self.current_file_path = None
-        self.textEdit.setPlaceholderText("Выберите файл для редактирования")
-        self.textEdit.setReadOnly(True)
-        self.watcher = ProjectFolderWatcher(folder_path)
-        self.watcher.file_changed.connect(self.handle_folder_change)
-        self.watcher.start()
+            self.watcher = ProjectFolderWatcher(folder_path)
+            self.watcher.file_changed.connect(self.handle_folder_change)
+            self.watcher.start()
 
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось открыть папку или файл:\n{e}")
 
 
     def save_markdown_file(self):
         if self.current_file_path:
-            with open(self.current_file_path, "w", encoding="utf-8") as f:
-                f.write(self.textEdit.toPlainText())
-            return
+            try:
+                with open(self.current_file_path, "w", encoding="utf-8") as f:
+                    f.write(self.textEdit.toPlainText())
+                return
+            except Exception as e:
+                QMessageBox.critical(self, "Ошибка", f"Ошибка при сохранении:\n{e}")
         file_path, _ = QFileDialog.getSaveFileName(
             self, "Сохранить как Markdown", "", "Markdown Files (*.md);;All Files (*)")
         if file_path:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(self.textEdit.toPlainText())
-            self.current_file_path = file_path
-            QMessageBox.information(self, "Успех", "Файл сохранён.")
+            try:
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.write(self.textEdit.toPlainText())
+                self.current_file_path = file_path
+                QMessageBox.information(self, "Успех", "Файл сохранён.")
+            except Exception as e:
+                QMessageBox.critical(self, "Ошибка", f"Не удалось сохранить файл:\n{e}")
     def export_to_pdf(self):
         file_path, _ = QFileDialog.getSaveFileName(
             self, "Сохранить как PDF", "", "PDF Files (*.pdf);;All Files (*)")
         if file_path:
-            self.webView.export_to_pdf(file_path)
-            QMessageBox.information(self, "Успех", "PDF успешно сохранён.")
+            try:
+                self.webView.export_to_pdf(file_path)
+                QMessageBox.information(self, "Успех", "PDF успешно сохранён.")
+            except Exception as e:
+                QMessageBox.critical(self, "Ошибка", f"Не удалось экспортировать в PDF:\n{e}")
     def make_bold(self):
         cursor = self.textEdit.textCursor()
         if cursor.hasSelection():
@@ -353,6 +369,46 @@ class MarkdownEditor(QMainWindow):
                 cursor.insertText(f"*{cursor.selectedText()}*")
             else:
                 cursor.insertText(cursor.selectedText()[1:-1])
+
+
+    def insert_heading(self, index):
+        cursor = self.textEdit.textCursor()
+        level = index
+        text = cursor.selectedText() or "Заголовок"
+        cursor.insertText(f"{'#' * level} {text}\n")
+    def update_preview(self):
+        md_text = self.textEdit.toPlainText()
+        lines = md_text.splitlines()
+        cursor = self.textEdit.textCursor()
+        current_line = cursor.blockNumber()
+        html_lines = []
+        for i, line in enumerate(lines):
+            html = markdown.markdown(line).replace("<p>", "").replace("</p>", "")
+            if i == current_line:
+                cls = "active-line"
+            else:
+                cls = ""
+            html_lines.append(f"<div class='{cls}'>{html}</div>")
+
+        self.webView.setHtmlContent("\n".join(html_lines))
+
+    def handle_folder_change(self):
+        self.build_project_tree(self.current_dir_path)
+
+    def closeEvent(self, event):
+        if hasattr(self, 'watcher'):
+            self.watcher.stop()
+
+        reply = QMessageBox.question(
+            self,
+            "Подтвердите выход",
+            "Вы уверены, что хотите выйти?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
     def insert_heading(self, index):
         cursor = self.textEdit.textCursor()
@@ -394,22 +450,19 @@ class MarkdownEditor(QMainWindow):
 
 
 if __name__ == "__main__":
+    os.environ['QTWEBENGINE_CHROMIUM_FLAGS'] = '--disable-gpu-compositing'
     app = QApplication(sys.argv)
     config_path = "config.json"
     config = {}
-
     if os.path.exists(config_path):
         with open(config_path, "r", encoding="utf-8") as f:
             config = json.load(f)
     else:
         QMessageBox.warning(None, "Error", "Config corrupted")
-
     if not config.get("kartei"):
-        # print('kartei is empty')
         selection_window = ProjectSelectionWindow()
         selection_window.show()
     else:
-        # print('kartei is filled')
         editor_window = MarkdownEditor(config.get("kartei"))
         editor_window.show()
 
