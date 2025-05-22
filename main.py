@@ -8,7 +8,6 @@ import os
 from PyQt6.QtWidgets import QMessageBox
 
 
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
