@@ -4,7 +4,7 @@ QWidget {
     color: #333333;
     font-family: Optima, "Segoe UI", Arial, sans-serif;
 }
-
+ф
 /* Кнопки */
 QPushButton {
     background-color: #ff6b6b;
@@ -27,25 +27,29 @@ QTextEdit, QPlainTextEdit {
     background-color: #f9f9f9;
     border: 1px solid #ccc;
     font-family: "DejaVu Sans Mono", monospace;
-    font-size: 10pt;
+    font-size: 16pt;
     color: #222222;
 }
 
 /* Меню */
 QMenuBar {
-    background-color: #ffffff;
+    background-color: #f0f0f0;
 }
 
 QMenu {
     background-color: #ffffff;
-    color: #333333;
+    color: #222222;
+}
+
+QMenu::item {
+    padding: 5px 25px 5px 20px;
+    background-color: transparent;
 }
 
 QMenu::item:selected {
-    background-color: #fff5f5;
+    background-color: #FDF6F9;
     color: #ff6b6b;
 }
-
 /* ScrollBar вертикальный */
 QScrollBar:vertical {
     background: #f0f0f0;

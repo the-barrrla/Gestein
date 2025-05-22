@@ -7,7 +7,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMainWindow, QListWidget, QTreeWidgetItem, QMenu, QInputDialog, QMessageBox, QFileDialog
 from PyQt6.uic import loadUi
-
+from pathlib import Path
 from watcher import ProjectFolderWatcher
 
 
@@ -19,6 +19,14 @@ class MarkdownEditor(QMainWindow):
         self.setWindowIcon(QIcon('icon.png'))
         self.current_dir_path = path
         self.recent_files = []
+
+        config_path = "config.json"
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+
+        self.theme = config["theme"]
+        self.set_theme(self.theme)
+
 
         config_path = "config.json"
         if os.path.exists(config_path):
@@ -46,14 +54,15 @@ class MarkdownEditor(QMainWindow):
         self.actionBold.triggered.connect(self.make_bold)
         self.actionItalic.triggered.connect(self.make_italic)
         self.file_list = QListWidget()
-        self.actionHeader1.triggered.connect(lambda: self.insert_heading(1))
-        self.actionHeader2.triggered.connect(lambda: self.insert_heading(2))
-        self.actionHeader3.triggered.connect(lambda: self.insert_heading(3))
-        self.actionHeader4.triggered.connect(lambda: self.insert_heading(4))
-        self.actionHeader5.triggered.connect(lambda: self.insert_heading(5))
-        self.actionHeader6.triggered.connect(lambda: self.insert_heading(6))
 
+        for i in range(1, 7):
+            getattr(self, f"actionHeader{i}").triggered.connect(lambda heading, level=i: self.insert_heading(level))
 
+        for theme_name in ["Dark", "Light", "Aqua", "Emerald",
+                           "Amethyst", "Sunny", "Custom1", "Custom2"]:
+            getattr(self, f"action{theme_name}").triggered.connect(
+                lambda _, name=theme_name.lower(): self.set_theme(name)
+            )
 
         self.textEdit.textChanged.connect(self.update_preview)
         self.textEdit.cursorPositionChanged.connect(self.update_preview)
@@ -63,6 +72,20 @@ class MarkdownEditor(QMainWindow):
 
         self.treeWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.treeWidget.customContextMenuRequested.connect(self.open_context_menu)
+
+    def set_theme(self, name):
+        config_path = "config.json"
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+
+        config["theme"] = name
+        self.theme = name
+
+        with open(config_path, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4)
+
+        self.setStyleSheet(Path(f"{name}.qss").read_text(encoding="utf-8"))
+
 
 
 
@@ -105,21 +128,25 @@ class MarkdownEditor(QMainWindow):
         if not item:
             return
 
-
         item_path = item.toolTip(0)
-        if not os.path.isdir(item_path):
-            return
 
         menu = QMenu()
-        create_file_action = menu.addAction("Создать новый файл")
-        create_folder_action = menu.addAction("Создать новую папку")
+        if os.path.isdir(item_path):
+            create_file_action = menu.addAction("Создать новый файл")
+            create_folder_action = menu.addAction("Создать новую папку")
+            delete_action = menu.addAction("Удалить папку")
+        else:
+            delete_action = menu.addAction("Удалить файл")
 
         action = menu.exec(self.treeWidget.viewport().mapToGlobal(position))
 
-        if action == create_file_action:
-            self.create_new_file_in_folder(item_path)
-        elif action == create_folder_action:
-            self.create_new_folder(item_path)
+        if action == delete_action:
+            self.delete_item(item_path)
+        elif os.path.isdir(item_path):
+            if action == create_file_action:
+                self.create_new_file_in_folder(item_path)
+            elif action == create_folder_action:
+                self.create_new_folder(item_path)
 
     def create_new_folder(self, parent_folder_path):
         folder_name, ok = QInputDialog.getText(self, "Новая папка", "Введите имя папки:")
@@ -133,9 +160,10 @@ class MarkdownEditor(QMainWindow):
             try:
                 os.makedirs(new_folder_path)
                 QMessageBox.information(self, "Папка создана", f"Папка {folder_name} создана.")
-                self.build_project_tree(self.current_dir_path)
+                self.build_project_tree(self.current_dir_path)  # Обновить дерево
             except Exception as e:
                 QMessageBox.critical(self, "Ошибка", f"Не удалось создать папку:\n{e}")
+
     def create_new_file_in_folder(self, parent_folder_path):
         text, ok = QInputDialog.getText(self, "Новый файл", "Введите имя файла:")
         if ok and text:
@@ -145,13 +173,53 @@ class MarkdownEditor(QMainWindow):
             if os.path.exists(new_file_path):
                 QMessageBox.warning(self, "Файл существует", "Файл с таким именем уже существует.")
                 return
-            try:
-                with open(new_file_path, "w", encoding="utf-8") as f:
-                    f.write("# Новый файл\n")
-                QMessageBox.information(self, "Файл создан", f"Файл {text} создан.")
-                self.build_project_tree(self.current_dir_path)
-            except Exception as e:
-                QMessageBox.critical(self, "Ошибка", f"Не удалось создать файл:\n{e}")
+            with open(new_file_path, "w", encoding="utf-8") as f:
+                f.write(f"# Новый файл {text}\n")
+            QMessageBox.information(self, "Файл создан", f"Файл {text} создан.")
+            self.build_project_tree(self.current_dir_path)
+            self.load_markdown_file(new_file_path)
+
+    def delete_item(self, path):
+
+        def remove_dir_recursive(dir_path):
+            for entry in os.listdir(dir_path):
+                full_path = os.path.join(dir_path, entry)
+                if os.path.isdir(full_path):
+                    remove_dir_recursive(full_path)
+                else:
+                    os.remove(full_path)
+            os.rmdir(dir_path)
+
+        confirm = QMessageBox.question(
+            self,
+            "Подтвердите удаление",
+            f"Вы уверены, что хотите удалить «{os.path.basename(path)}»?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
+        if os.path.isdir(path):
+            remove_dir_recursive(path)
+        else:
+            if self.current_file_path == path:
+                self.textEdit.clear()
+                self.textEdit.setReadOnly(True)
+                self.textEdit.setPlaceholderText("Выберите файл для редактирования")
+                self.current_file_path = None
+                self.setWindowTitle("Gestein")
+
+                config_path = "config.json"
+                if os.path.exists(config_path):
+                    with open(config_path, "r", encoding="utf-8") as f:
+                        config = json.load(f)
+                    if config.get("lastOpenFile") == path:
+                        config["lastOpenFile"] = ""
+                        with open(config_path, "w", encoding="utf-8") as f:
+                            json.dump(config, f, indent=4)
+            os.remove(path)
+        self.build_project_tree(self.current_dir_path)
+        QMessageBox.information(self, "Удаление", "Удаление выполнено успешно.")
+
     def load_markdown_file(self, file_path=None):
         if not file_path:
             file_path, _ = QFileDialog.getOpenFileName(
@@ -216,23 +284,6 @@ class MarkdownEditor(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Не удалось открыть папку или файл:\n{e}")
 
-    """def create_new_file(self):
-        self.current_file_path = None
-        self.textEdit.clear()
-    def load_markdown_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "Выберите Markdown файл", "", "Markdown Files (*.md)")
-        if not file_path:
-            return
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                content = f.read()
-                self.textEdit.setPlainText(content)
-                self.current_file_path = file_path
-                self.add_to_recent_files(file_path)
-                self.update_preview()
-        except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Не удалось открыть файл:\n{e}")"""
     def save_markdown_file(self):
         if self.current_file_path:
             try:
@@ -241,7 +292,7 @@ class MarkdownEditor(QMainWindow):
                 return
             except Exception as e:
                 QMessageBox.critical(self, "Ошибка", f"Ошибка при сохранении:\n{e}")
-        file_path, _ = QFileDialog.getSaveFileName(
+        """file_path, _ = QFileDialog.getSaveFileName(
             self, "Сохранить как Markdown", "", "Markdown Files (*.md);;All Files (*)")
         if file_path:
             try:
@@ -250,7 +301,8 @@ class MarkdownEditor(QMainWindow):
                 self.current_file_path = file_path
                 QMessageBox.information(self, "Успех", "Файл сохранён.")
             except Exception as e:
-                QMessageBox.critical(self, "Ошибка", f"Не удалось сохранить файл:\n{e}")
+                QMessageBox.critical(self, "Ошибка", f"Не удалось сохранить файл:\n{e}")"""
+
     def export_to_pdf(self):
         file_path, _ = QFileDialog.getSaveFileName(
             self, "Сохранить как PDF", "", "PDF Files (*.pdf);;All Files (*)")
@@ -278,10 +330,6 @@ class MarkdownEditor(QMainWindow):
                 cursor.insertText(f"*{cursor.selectedText()}*")
             else:
                 cursor.insertText(cursor.selectedText()[1:-1])
-    """def make_underline(self):
-        cursor = self.textEdit.textCursor()
-        if cursor.hasSelection():
-            cursor.insertText(f"<u>{cursor.selectedText()}</u>")"""
 
     def insert_heading(self, index):
         cursor = self.textEdit.textCursor()
@@ -317,6 +365,7 @@ class MarkdownEditor(QMainWindow):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
+            self.save_markdown_file()
             event.accept()
         else:
             event.ignore()
