@@ -260,7 +260,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>New Kartei</string>
+    <string> Open New Kartei</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
