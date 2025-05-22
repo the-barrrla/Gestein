@@ -45,11 +45,8 @@ class ThemeDialog(QDialog):
         uic.loadUi("themeDialog.ui", self)
         self.setWindowTitle("Выбор темы")
 
-
-
-        self.setStyleSheet(Path("Dark.qss").read_text(encoding="utf-8"))
+        self.setStyleSheet(Path(f'{Path(__file__).parent}/Styles/Dark.qss').read_text(encoding='utf-8'))
         self.chosen_theme = None
-
 
         self.buttonLight.clicked.connect(self.choose_light)
         self.buttonDark.clicked.connect(self.choose_dark)
