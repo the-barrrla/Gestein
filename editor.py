@@ -84,7 +84,8 @@ class MarkdownEditor(QMainWindow):
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
-        self.setStyleSheet(Path(f"{name}.qss").read_text(encoding="utf-8"))
+        self.setStyleSheet(Path(f'{Path(__file__).parent}/Styles/{name}.qss').read_text(encoding='utf-8'))
+
 
 
 
