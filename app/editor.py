@@ -186,20 +186,27 @@ class MarkdownEditor(QMainWindow):
         )
         if confirm != QMessageBox.StandardButton.Yes:
             return
+
         if os.path.isdir(path):
-            remove_dir_recursive(path)
+            current_dir = os.path.dirname(self.current_file_path)
+            if os.path.commonpath([current_dir, path]) == path:
+                remove_dir_recursive(path)
+            else:
+                self.reset_editor()
+                config = self.load_config()
+                if config.get("lastOpenFile") == path:
+                    config["lastOpenFile"] = ""
+                    self.save_config(config)
+                remove_dir_recursive(path)
         else:
             if self.current_file_path == path:
                 self.reset_editor()
 
-                config_path = "config.json"
-                if os.path.exists(config_path):
-                    with open(config_path, "r", encoding="utf-8") as f:
-                        config = json.load(f)
-                    if config.get("lastOpenFile") == path:
-                        config["lastOpenFile"] = ""
-                        with open(config_path, "w", encoding="utf-8") as f:
-                            json.dump(config, f, indent=4)
+                config = self.load_config()
+                if config.get("lastOpenFile") == path:
+                    config["lastOpenFile"] = ""
+                    self.save_config(config)
+
             os.remove(path)
         self.build_project_tree(self.current_dir_path)
         QMessageBox.information(self, "Удаление", "Удаление выполнено успешно.")
@@ -218,7 +225,7 @@ class MarkdownEditor(QMainWindow):
             self.textEdit.setReadOnly(False)
             self.textEdit.setPlaceholderText("Введите текст здесь...")
             self.setWindowTitle(f"Gestein - {os.path.basename(file_path)}")
-        config_path = "config.json"
+        config_path = "app/config.json"
         if os.path.exists(config_path):
             with open(config_path, "r", encoding="utf-8") as f:
                 config = json.load(f)
@@ -231,7 +238,7 @@ class MarkdownEditor(QMainWindow):
     def load_dir(self):
         self.save_markdown_file()
 
-        config_path = "config.json"
+        config_path = "app/config.json"
         with open(config_path, "r", encoding="utf-8") as f:
             config = json.load(f)
 
@@ -244,7 +251,6 @@ class MarkdownEditor(QMainWindow):
             json.dump(config, f, indent=4)
 
         self.reset_editor()
-
         self.build_kartei(folder_path)
 
     def save_markdown_file(self):
@@ -320,7 +326,7 @@ class MarkdownEditor(QMainWindow):
             return json.load(f)
 
     def save_config(self, config):
-        config_path = "config.json"
+        config_path = "app/config.json"
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
@@ -333,6 +339,7 @@ class MarkdownEditor(QMainWindow):
 
     def build_kartei(self, path):
         self.build_project_tree(path)
+        self.current_dir_path = path
         self.watcher = ProjectFolderWatcher(path)
         self.watcher.file_changed.connect(self.handle_folder_change)
         self.watcher.start()

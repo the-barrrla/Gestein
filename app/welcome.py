@@ -10,9 +10,9 @@ from pathlib import Path
 class ProjectSelectionWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        loadUi("resources/ui/select.ui", self)
+        loadUi(f"{Path(__file__).parent.parent}/resources/ui/select.ui", self)
         self.setWindowTitle("Добро пожаловать!")
-        self.setWindowIcon(QIcon('../resources/icons/icon.png'))
+        self.setWindowIcon(QIcon('/"resources"/"icons"/"icon.png"'))
         self.selectButton.clicked.connect(self.select_project_folder)
 
     def select_project_folder(self):
@@ -23,7 +23,7 @@ class ProjectSelectionWindow(QMainWindow):
             if theme_dialog.exec():
                 theme = theme_dialog.chosen_theme
 
-                config_path = "config.json"
+                config_path = "app/config.json"
                 with open(config_path, "r", encoding="utf-8") as f:
                     config = json.load(f)
 
@@ -41,10 +41,10 @@ class ProjectSelectionWindow(QMainWindow):
 class ThemeDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        loadUi('resources/ui/themeDialog.ui', self)
+        loadUi(f'{Path(__file__).parent.parent}/resources/ui/themeDialog.ui', self)
         self.setWindowTitle("Выбор темы")
 
-        self.setStyleSheet(Path('../resources/Styles/Dark.qss').read_text(encoding='utf-8'))
+        self.setStyleSheet(Path(f'{Path(__file__).parent.parent}/resources/Styles/Dark.qss').read_text(encoding='utf-8'))
         self.chosen_theme = None
 
         self.buttonLight.clicked.connect(self.choose_light)
