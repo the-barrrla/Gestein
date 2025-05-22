@@ -19,7 +19,8 @@ if __name__ == "__main__":
     else:
         QMessageBox.warning(None, "Error", "Config corrupted")
 
-    app.setStyleSheet(Path('resources/Styles/Dark.qss').read_text(encoding='utf-8'))
+    app.setStyleSheet(Path('resources/Styles/Dark.qss')
+                      .read_text(encoding='utf-8'))
 
     if not config.get("kartei"):
         selection_window = ProjectSelectionWindow()

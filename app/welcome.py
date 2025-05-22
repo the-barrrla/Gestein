@@ -7,6 +7,7 @@ from PyQt6.uic import loadUi
 from app.editor import MarkdownEditor
 from pathlib import Path
 
+
 class ProjectSelectionWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -17,7 +18,9 @@ class ProjectSelectionWindow(QMainWindow):
 
     def select_project_folder(self):
         desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-        folder = QFileDialog.getExistingDirectory(self, "Выберите папку проекта", desktop_path)
+        folder = (QFileDialog.getExistingDirectory(self,
+                                                   "Выберите папку проекта",
+                                                   desktop_path))
         if folder:
             theme_dialog = ThemeDialog(self)
             if theme_dialog.exec():
@@ -41,10 +44,13 @@ class ProjectSelectionWindow(QMainWindow):
 class ThemeDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        loadUi(f'{Path(__file__).parent.parent}/resources/ui/themeDialog.ui', self)
+        loadUi(f'{Path(__file__).parent.parent}'
+               f'/resources/ui/themeDialog.ui', self)
         self.setWindowTitle("Выбор темы")
 
-        self.setStyleSheet(Path(f'{Path(__file__).parent.parent}/resources/Styles/Dark.qss').read_text(encoding='utf-8'))
+        self.setStyleSheet(Path(f'{Path(__file__).parent.parent}'
+                                f'/resources/Styles/Dark.qss')
+                           .read_text(encoding='utf-8'))
         self.chosen_theme = None
 
         self.buttonLight.clicked.connect(self.choose_light)

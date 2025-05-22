@@ -4,17 +4,19 @@ import re
 import sys
 
 import markdown
-from PyQt6 import uic
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QMainWindow, QListWidget, QTreeWidgetItem, QMenu, QInputDialog, QMessageBox, QFileDialog
+from PyQt6.QtWidgets import (QMainWindow, QListWidget,
+                             QTreeWidgetItem, QMenu, QInputDialog,
+                             QMessageBox, QFileDialog)
 from PyQt6.uic import loadUi
 from pathlib import Path
 from app.watcher import ProjectFolderWatcher
-from app.editablewebengineview import EditableWebEngineView
+from app.editablewebengineview import EditableWebEngineView  # do not delete!
 
 sys.path.append(os.path.abspath("app"))
+
 
 class MarkdownEditor(QMainWindow):
     def __init__(self, path=None):
@@ -25,12 +27,10 @@ class MarkdownEditor(QMainWindow):
         self.current_dir_path = path
         self.recent_files = []
 
-
         config = self.load_config()
         self.theme = config["theme"]
         self.set_theme(self.theme)
         self.save_config(config)
-
 
         config = self.load_config()
         self.current_file_path = config.get("lastOpenFile")
@@ -49,7 +49,8 @@ class MarkdownEditor(QMainWindow):
         self.file_list = QListWidget()
 
         for i in range(1, 7):
-            getattr(self, f"actionHeader{i}").triggered.connect(lambda heading, level=i: self.insert_heading(level))
+            (getattr(self, f"actionHeader{i}").triggered.connect
+             (lambda heading, level=i: self.insert_heading(level)))
 
         for theme_name in ["Dark", "Light", "Aqua", "Emerald",
                            "Amethyst", "Sunny", "Custom1", "Custom2"]:
@@ -63,8 +64,10 @@ class MarkdownEditor(QMainWindow):
 
         self.treeWidget.itemClicked.connect(self.on_tree_item_clicked)
 
-        self.treeWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.treeWidget.customContextMenuRequested.connect(self.open_context_menu)
+        self.treeWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.
+                                             CustomContextMenu)
+        (self.treeWidget.customContextMenuRequested
+         .connect(self.open_context_menu))
 
     def set_theme(self, name):
         config_path = "app/config.json"
@@ -77,11 +80,8 @@ class MarkdownEditor(QMainWindow):
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
-        self.setStyleSheet(Path(f'resources/Styles/{name}.qss').read_text(encoding='utf-8'))
-
-
-
-
+        self.setStyleSheet(Path(f'resources/Styles/{name}.qss')
+                           .read_text(encoding='utf-8'))
 
     def on_tree_item_clicked(self, item):
         file_path = item.toolTip(0)
@@ -140,30 +140,39 @@ class MarkdownEditor(QMainWindow):
                 self.create_new_folder(item_path)
 
     def create_new_folder(self, parent_folder_path):
-        folder_name, ok = QInputDialog.getText(self, "Новая папка", "Введите имя папки:")
+        folder_name, ok = QInputDialog.getText(self,
+                                               "Новая папка",
+                                               "Введите имя папки:")
         if ok and folder_name:
             new_folder_path = os.path.join(parent_folder_path, folder_name)
 
             if os.path.exists(new_folder_path):
-                QMessageBox.warning(self, "Папка существует", "Папка с таким именем уже существует.")
+                QMessageBox.warning(self, "Папка существует",
+                                    "Папка с таким именем уже существует.")
                 return
 
             os.makedirs(new_folder_path)
-            QMessageBox.information(self, "Папка создана", f"Папка {folder_name} создана.")
+            QMessageBox.information(self, "Папка создана",
+                                    f"Папка {folder_name} создана.")
             self.build_project_tree(self.current_dir_path)  # Обновить дерево
 
     def create_new_file_in_folder(self, parent_folder_path):
-        text, ok = QInputDialog.getText(self, "Новый файл", "Введите имя файла:")
+        text, ok = QInputDialog.getText(self,
+                                        "Новый файл",
+                                        "Введите имя файла:")
         if ok and text:
             if not text.lower()[-3:] == ".md":
                 text += ".md"
             new_file_path = os.path.join(parent_folder_path, text)
             if os.path.exists(new_file_path):
-                QMessageBox.warning(self, "Файл существует", "Файл с таким именем уже существует.")
+                QMessageBox.warning(self, "Ошибка",
+                                    "Файл с таким именем уже существует.")
                 return
             with open(new_file_path, "w", encoding="utf-8") as f:
                 f.write(f"# Новый файл {text}\n")
-            QMessageBox.information(self, "Файл создан", f"Файл {text} создан.")
+            QMessageBox.information(self,
+                                    "Файл создан",
+                                    f"Файл {text} создан.")
             self.build_project_tree(self.current_dir_path)
             self.load_markdown_file(new_file_path)
 
@@ -209,7 +218,9 @@ class MarkdownEditor(QMainWindow):
 
             os.remove(path)
         self.build_project_tree(self.current_dir_path)
-        QMessageBox.information(self, "Удаление", "Удаление выполнено успешно.")
+        QMessageBox.information(self,
+                                "Удаление",
+                                "Удаление выполнено успешно.")
 
     def load_markdown_file(self, file_path=None):
         if not file_path:
@@ -243,7 +254,10 @@ class MarkdownEditor(QMainWindow):
             config = json.load(f)
 
         desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-        folder_path = QFileDialog.getExistingDirectory(self, "Выберите папку проекта", desktop_path)
+        folder_path = (QFileDialog.
+                       getExistingDirectory(self,
+                                            "Выберите папку проекта",
+                                            desktop_path))
         if not folder_path:
             return
         config["kartei"] = folder_path
@@ -259,24 +273,29 @@ class MarkdownEditor(QMainWindow):
                 f.write(self.textEdit.toPlainText())
             return
 
-
     def export_to_pdf(self):
         md_text = self.textEdit.toPlainText()
         lines = md_text.splitlines()
         html_lines = []
         for line in lines:
-            html = markdown.markdown(line).replace("<p>", "").replace("</p>", "")
+            html = (markdown.markdown(line)
+                    .replace("<p>", "")
+                    .replace("</p>", ""))
             html_lines.append(f"<div>{html}</div>")
         html_content = "\n".join(html_lines)
 
-        self.webView.setHtmlContent(html_content, highlight=False)
+        self.webView.set_html_content(html_content, highlight=False)
 
         desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
         file_path, _ = QFileDialog.getSaveFileName(
-            self, "Сохранить как PDF", desktop_path, "PDF Files (*.pdf);;All Files (*)")
+            self, "Сохранить как PDF",
+            desktop_path,
+            "PDF Files (*.pdf);;All Files (*)")
         if file_path:
             self.webView.export_to_pdf(file_path)
-            QMessageBox.information(self, "Успех", "PDF успешно сохранён.")
+            QMessageBox.information(self,
+                                    "Успех",
+                                    "PDF успешно сохранён.")
 
     def make_bold(self):
         cursor = self.textEdit.textCursor()
@@ -287,6 +306,7 @@ class MarkdownEditor(QMainWindow):
                 cursor.insertText(f"**{cursor.selectedText()}**")
             else:
                 cursor.insertText(cursor.selectedText()[2:-2])
+
     def make_italic(self):
         cursor = self.textEdit.textCursor()
         if cursor.hasSelection():
@@ -302,6 +322,7 @@ class MarkdownEditor(QMainWindow):
         level = index
         text = cursor.selectedText() or "Заголовок"
         cursor.insertText(f"{'#' * level} {text}\n")
+
     def update_preview(self):
         md_text = self.textEdit.toPlainText()
         lines = md_text.splitlines()
@@ -309,13 +330,14 @@ class MarkdownEditor(QMainWindow):
         current_line = cursor.blockNumber()
         html_lines = []
         for i, line in enumerate(lines):
-            html = markdown.markdown(line).replace("<p>", "").replace("</p>", "")
+            html = (markdown.markdown(line).replace("<p>", "")
+                    .replace("</p>", ""))
             if i == current_line:
                 cls = "active-line"
             else:
                 cls = ""
             html_lines.append(f"<div class='{cls}'>{html}</div>")
-        self.webView.setHtmlContent("\n".join(html_lines), highlight=True)
+        self.webView.set_html_content("\n".join(html_lines), highlight=True)
 
     def handle_folder_change(self):
         self.build_project_tree(self.current_dir_path)

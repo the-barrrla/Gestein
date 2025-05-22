@@ -19,7 +19,9 @@ class ProjectFolderWatcher(QThread):
         self.file_changed.emit()
 
     def run(self):
-        self.observer.schedule(self.event_handler, self.folder_path, recursive=True)
+        self.observer.schedule(self.event_handler,
+                               self.folder_path,
+                               recursive=True)
         self.observer.start()
         try:
             while not self.isInterruptionRequested():

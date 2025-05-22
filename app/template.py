@@ -2,7 +2,7 @@ HTML_TEMPLATE = """
 <!DOCTYPE html>
         <html>
         <head>
-            <meta charset="utf-8">        
+            <meta charset="utf-8">
             <style>
                 body {{
                     font-family: Optima, "Segoe UI", Arial, sans-serif;
@@ -24,7 +24,8 @@ HTML_TEMPLATE = """
                 table {{ border-collapse: collapse; width: 100%; }}
                 table, th, td {{ border: 1px solid #ddd; padding: 8px; }}
                 th {{ background-color: #f2f2f2; }}
-                .active-line {{ background-color: #ffffcc; border-left: 4px solid orange; padding-left: 4px; }}
+                .active-line {{ background-color: #ffffcc;
+                 border-left: 4px solid orange; padding-left: 4px; }}
             </style>
         </head>
             {body_content}
