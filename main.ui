@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1121</width>
-    <height>774</height>
+    <height>746</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -67,11 +67,9 @@
           <property name="styleSheet">
            <string notr="true">QWidget {border: 1px solid #000000;border-radius: 3px;}</string>
           </property>
-          <column>
-           <property name="text">
-            <string notr="true">1</string>
-           </property>
-          </column>
+          <property name="headerHidden">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -219,19 +217,20 @@
     <property name="title">
      <string>Appearance</string>
     </property>
-    <widget class="QMenu" name="menuFont_Size">
+    <widget class="QMenu" name="menuTheme">
      <property name="title">
-      <string>Font Size</string>
+      <string>Theme</string>
      </property>
-     <addaction name="action1"/>
-     <addaction name="action2"/>
-     <addaction name="action3"/>
-     <addaction name="action4"/>
+     <addaction name="actionDark"/>
+     <addaction name="actionLight"/>
+     <addaction name="actionAqua"/>
+     <addaction name="actionEmerald"/>
+     <addaction name="actionAmethyst"/>
+     <addaction name="actionSunny"/>
+     <addaction name="actionCustom1"/>
+     <addaction name="actionCustom2"/>
     </widget>
-    <addaction name="actionDark_Mode"/>
-    <addaction name="actionLight_Mode"/>
-    <addaction name="separator"/>
-    <addaction name="menuFont_Size"/>
+    <addaction name="menuTheme"/>
     <addaction name="separator"/>
     <addaction name="actionBold"/>
     <addaction name="actionItalic"/>
@@ -287,7 +286,7 @@
     <string>Copy</string>
    </property>
    <property name="shortcut">
-    <string>CapsLock</string>
+    <string>Ctrl+C</string>
    </property>
   </action>
   <action name="actionPaste">
@@ -398,6 +397,46 @@
   <action name="actionHeader6">
    <property name="text">
     <string>Header 6</string>
+   </property>
+  </action>
+  <action name="actionDark">
+   <property name="text">
+    <string>Dark</string>
+   </property>
+  </action>
+  <action name="actionLight">
+   <property name="text">
+    <string>Light</string>
+   </property>
+  </action>
+  <action name="actionAqua">
+   <property name="text">
+    <string>Aqua</string>
+   </property>
+  </action>
+  <action name="actionCustom1">
+   <property name="text">
+    <string>Custom1</string>
+   </property>
+  </action>
+  <action name="actionCustom2">
+   <property name="text">
+    <string>Custom2</string>
+   </property>
+  </action>
+  <action name="actionEmerald">
+   <property name="text">
+    <string>Emerald</string>
+   </property>
+  </action>
+  <action name="actionAmethyst">
+   <property name="text">
+    <string>Amethyst</string>
+   </property>
+  </action>
+  <action name="actionSunny">
+   <property name="text">
+    <string>Sunny</string>
    </property>
   </action>
  </widget>
