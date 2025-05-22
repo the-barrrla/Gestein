@@ -1,8 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication
-from editor import MarkdownEditor
-from welcome import ProjectSelectionWindow
-import editablewebengineview
+from app.editor import MarkdownEditor
+from app.welcome import ProjectSelectionWindow
 from pathlib import Path
 import json
 import os
@@ -13,16 +12,15 @@ from PyQt6.QtWidgets import QMessageBox
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    config_path = "config.json"
     config = {}
 
-    if os.path.exists(config_path):
-        with open(config_path, "r", encoding="utf-8") as f:
+    if os.path.exists("app/config.json"):
+        with open("app/config.json", "r", encoding="utf-8") as f:
             config = json.load(f)
     else:
         QMessageBox.warning(None, "Error", "Config corrupted")
 
-    app.setStyleSheet(Path('Styles/Dark.qss').read_text(encoding='utf-8'))
+    app.setStyleSheet(Path('resources/Styles/Dark.qss').read_text(encoding='utf-8'))
 
     if not config.get("kartei"):
         selection_window = ProjectSelectionWindow()

@@ -1,6 +1,6 @@
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
-from template import HTML_TEMPLATE
+from app.template import HTML_TEMPLATE
 
 
 class EditableWebEngineView(QWebEngineView):

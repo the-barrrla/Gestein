@@ -1,21 +1,27 @@
 import json
 import os
 import re
+import sys
+
 import markdown
+from PyQt6 import uic
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMainWindow, QListWidget, QTreeWidgetItem, QMenu, QInputDialog, QMessageBox, QFileDialog
 from PyQt6.uic import loadUi
 from pathlib import Path
-from watcher import ProjectFolderWatcher
+from app.watcher import ProjectFolderWatcher
+from app.editablewebengineview import EditableWebEngineView
 
+sys.path.append(os.path.abspath("app"))
 
 class MarkdownEditor(QMainWindow):
     def __init__(self, path=None):
         super().__init__()
-        loadUi('ui/main.ui', self)
+        loadUi("resources/ui/main.ui", self)
         self.setWindowTitle("Gestein")
-        self.setWindowIcon(QIcon('icons/icon.png'))
+        self.setWindowIcon(QIcon('../resources/icons/icon.png'))
         self.current_dir_path = path
         self.recent_files = []
 
@@ -61,7 +67,7 @@ class MarkdownEditor(QMainWindow):
         self.treeWidget.customContextMenuRequested.connect(self.open_context_menu)
 
     def set_theme(self, name):
-        config_path = "config.json"
+        config_path = "app/config.json"
         with open(config_path, "r", encoding="utf-8") as f:
             config = json.load(f)
 
@@ -71,7 +77,7 @@ class MarkdownEditor(QMainWindow):
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
-        self.setStyleSheet(Path(f'Styles/{name}.qss').read_text(encoding='utf-8'))
+        self.setStyleSheet(Path(f'resources/Styles/{name}.qss').read_text(encoding='utf-8'))
 
 
 
@@ -309,7 +315,7 @@ class MarkdownEditor(QMainWindow):
         self.build_project_tree(self.current_dir_path)
 
     def load_config(self):
-        config_path = "config.json"
+        config_path = "app/config.json"
         with open(config_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
