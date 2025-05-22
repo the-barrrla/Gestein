@@ -34,13 +34,7 @@ class MarkdownEditor(QMainWindow):
         else:
             self.reset_editor()
 
-
-        self.build_project_tree(self.current_dir_path)
-
-        self.watcher = ProjectFolderWatcher(self.current_dir_path)
-        self.watcher.file_changed.connect(self.handle_folder_change)
-        self.watcher.start()
-
+        self.build_kartei(self.current_dir_path)
 
         self.actionOpen.triggered.connect(self.load_dir)
         self.actionSave.triggered.connect(self.save_markdown_file)
@@ -95,10 +89,7 @@ class MarkdownEditor(QMainWindow):
         self.treeWidget.clear()
 
         def add_items(parent_item, path):
-            try:
-                entries = sorted(os.listdir(path))
-            except NotADirectoryError:
-                return
+            entries = sorted(os.listdir(path))
 
             for name in entries:
                 abs_path = os.path.join(path, name)
@@ -152,12 +143,9 @@ class MarkdownEditor(QMainWindow):
                 QMessageBox.warning(self, "Папка существует", "Папка с таким именем уже существует.")
                 return
 
-            try:
-                os.makedirs(new_folder_path)
-                QMessageBox.information(self, "Папка создана", f"Папка {folder_name} создана.")
-                self.build_project_tree(self.current_dir_path)  # Обновить дерево
-            except Exception as e:
-                QMessageBox.critical(self, "Ошибка", f"Не удалось создать папку:\n{e}")
+            os.makedirs(new_folder_path)
+            QMessageBox.information(self, "Папка создана", f"Папка {folder_name} создана.")
+            self.build_project_tree(self.current_dir_path)  # Обновить дерево
 
     def create_new_file_in_folder(self, parent_folder_path):
         text, ok = QInputDialog.getText(self, "Новый файл", "Введите имя файла:")
@@ -217,31 +205,23 @@ class MarkdownEditor(QMainWindow):
                 self, "Выберите Markdown файл", "", "Markdown Files (*.md)")
         if not file_path:
             return
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                content = f.read()
-                self.textEdit.setPlainText(content)
-                self.current_file_path = file_path
-                self.update_preview()
-                self.textEdit.setReadOnly(False)
-                self.textEdit.setPlaceholderText("Введите текст здесь...")
-                self.setWindowTitle(f"Gestein - {os.path.basename(file_path)}")
-
-
-            config_path = "config.json"
-            if os.path.exists(config_path):
-                with open(config_path, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-            else:
-                config = {}
-
-            config["lastOpenFile"] = file_path
-
-            with open(config_path, "w", encoding="utf-8") as f:
-                json.dump(config, f, indent=4)
-
-        except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Не удалось открыть файл:\n{e}")
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+            self.textEdit.setPlainText(content)
+            self.current_file_path = file_path
+            self.update_preview()
+            self.textEdit.setReadOnly(False)
+            self.textEdit.setPlaceholderText("Введите текст здесь...")
+            self.setWindowTitle(f"Gestein - {os.path.basename(file_path)}")
+        config_path = "config.json"
+        if os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf-8") as f:
+                config = json.load(f)
+        else:
+            config = {}
+        config["lastOpenFile"] = file_path
+        with open(config_path, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4)
 
     def load_dir(self):
         self.save_markdown_file()
@@ -260,40 +240,21 @@ class MarkdownEditor(QMainWindow):
 
         self.reset_editor()
 
-        self.build_project_tree(folder_path)
-
-        self.watcher = ProjectFolderWatcher(folder_path)
-        self.watcher.file_changed.connect(self.handle_folder_change)
-        self.watcher.start()
+        self.build_kartei(folder_path)
 
     def save_markdown_file(self):
         if self.current_file_path:
-            try:
-                with open(self.current_file_path, "w", encoding="utf-8") as f:
-                    f.write(self.textEdit.toPlainText())
-                return
-            except Exception as e:
-                QMessageBox.critical(self, "Ошибка", f"Ошибка при сохранении:\n{e}")
-        """file_path, _ = QFileDialog.getSaveFileName(
-            self, "Сохранить как Markdown", "", "Markdown Files (*.md);;All Files (*)")
-        if file_path:
-            try:
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.write(self.textEdit.toPlainText())
-                self.current_file_path = file_path
-                QMessageBox.information(self, "Успех", "Файл сохранён.")
-            except Exception as e:
-                QMessageBox.critical(self, "Ошибка", f"Не удалось сохранить файл:\n{e}")"""
+            with open(self.current_file_path, "w", encoding="utf-8") as f:
+                f.write(self.textEdit.toPlainText())
+            return
+
 
     def export_to_pdf(self):
         file_path, _ = QFileDialog.getSaveFileName(
             self, "Сохранить как PDF", "", "PDF Files (*.pdf);;All Files (*)")
         if file_path:
-            try:
-                self.webView.export_to_pdf(file_path)
-                QMessageBox.information(self, "Успех", "PDF успешно сохранён.")
-            except Exception as e:
-                QMessageBox.critical(self, "Ошибка", f"Не удалось экспортировать в PDF:\n{e}")
+            self.webView.export_to_pdf(file_path)
+            QMessageBox.information(self, "Успех", "PDF успешно сохранён.")
     def make_bold(self):
         cursor = self.textEdit.textCursor()
         if cursor.hasSelection():
@@ -352,6 +313,12 @@ class MarkdownEditor(QMainWindow):
         self.textEdit.setPlaceholderText("Выберите файл для редактирования")
         self.current_file_path = None
         self.setWindowTitle("Gestein")
+
+    def build_kartei(self, path):
+        self.build_project_tree(path)
+        self.watcher = ProjectFolderWatcher(path)
+        self.watcher.file_changed.connect(self.handle_folder_change)
+        self.watcher.start()
 
     def closeEvent(self, event):
         if hasattr(self, 'watcher'):
