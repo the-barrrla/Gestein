@@ -20,7 +20,6 @@ class ProjectSelectionWindow(QMainWindow):
         desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
         folder = QFileDialog.getExistingDirectory(self, "Выберите папку проекта", desktop_path)
         if folder:
-            # Показываем диалог выбора темы
             theme_dialog = ThemeDialog(self)
             if theme_dialog.exec():
                 theme = theme_dialog.chosen_theme
@@ -35,9 +34,9 @@ class ProjectSelectionWindow(QMainWindow):
                 with open(config_path, "w", encoding="utf-8") as f:
                     json.dump(config, f, indent=4)
 
-            self.editor_window = MarkdownEditor(folder)
-            self.editor_window.show()
-            self.close()
+                self.editor_window = MarkdownEditor(folder)
+                self.editor_window.show()
+                self.close()
 
 
 class ThemeDialog(QDialog):
