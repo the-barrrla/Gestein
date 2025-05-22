@@ -20,25 +20,19 @@ class MarkdownEditor(QMainWindow):
         self.current_dir_path = path
         self.recent_files = []
 
-        config_path = "config.json"
-        with open(config_path, "r", encoding="utf-8") as f:
-            config = json.load(f)
 
+        config = self.load_config()
         self.theme = config["theme"]
         self.set_theme(self.theme)
+        self.save_config(config)
 
 
-        config_path = "config.json"
-        if os.path.exists(config_path):
-            with open(config_path, "r", encoding="utf-8") as f:
-                config = json.load(f)
-                self.current_file_path = config.get("lastOpenFile")
-            if self.current_file_path:
-                self.load_markdown_file(self.current_file_path)
-            else:
-                self.current_file_path = None
-                self.textEdit.setReadOnly(True)
-                self.textEdit.setPlaceholderText("Выберите файл для редактирования")
+        config = self.load_config()
+        self.current_file_path = config.get("lastOpenFile")
+        if self.current_file_path:
+            self.load_markdown_file(self.current_file_path)
+        else:
+            self.reset_editor()
 
 
         self.build_project_tree(self.current_dir_path)
@@ -203,11 +197,7 @@ class MarkdownEditor(QMainWindow):
             remove_dir_recursive(path)
         else:
             if self.current_file_path == path:
-                self.textEdit.clear()
-                self.textEdit.setReadOnly(True)
-                self.textEdit.setPlaceholderText("Выберите файл для редактирования")
-                self.current_file_path = None
-                self.setWindowTitle("Gestein")
+                self.reset_editor()
 
                 config_path = "config.json"
                 if os.path.exists(config_path):
@@ -268,11 +258,7 @@ class MarkdownEditor(QMainWindow):
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
-        self.textEdit.clear()
-        self.setWindowTitle("Gestein")
-        self.current_file_path = None
-        self.textEdit.setPlaceholderText("Выберите файл для редактирования")
-        self.textEdit.setReadOnly(True)
+        self.reset_editor()
 
         self.build_project_tree(folder_path)
 
@@ -359,6 +345,13 @@ class MarkdownEditor(QMainWindow):
         config_path = "config.json"
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
+
+    def reset_editor(self):
+        self.textEdit.clear()
+        self.textEdit.setReadOnly(True)
+        self.textEdit.setPlaceholderText("Выберите файл для редактирования")
+        self.current_file_path = None
+        self.setWindowTitle("Gestein")
 
     def closeEvent(self, event):
         if hasattr(self, 'watcher'):
