@@ -3,7 +3,7 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 from template import HTML_TEMPLATE
 
 
-class EditableWebEngineView(QWebEngineView):  # html window
+class EditableWebEngineView(QWebEngineView):
     def __init__(self, parent=None):
         super().__init__(parent)
 

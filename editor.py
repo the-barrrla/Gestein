@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import time
 import markdown
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon

@@ -1,9 +1,8 @@
 import json
 import os
 
-from PyQt6 import uic
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QLabel, QPushButton, QFileDialog, QWidget, QDialog
+from PyQt6.QtWidgets import QMainWindow, QFileDialog, QDialog
 from PyQt6.uic import loadUi
 from editor import MarkdownEditor
 from pathlib import Path

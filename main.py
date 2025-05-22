@@ -2,7 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication
 from editor import MarkdownEditor
 from welcome import ProjectSelectionWindow
-from PyQt6.QtWebEngineWidgets import QWebEngineView
+import editablewebengineview
 from pathlib import Path
 import json
 import os
