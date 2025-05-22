@@ -46,6 +46,10 @@ class MarkdownEditor(QMainWindow):
         self.actionPDF.triggered.connect(self.export_to_pdf)
         self.actionBold.triggered.connect(self.make_bold)
         self.actionItalic.triggered.connect(self.make_italic)
+        self.actionUndo.triggered.connect(self.textEdit.undo)
+        self.actionRedo.triggered.connect(self.textEdit.redo)
+        self.actionCopy.triggered.connect(self.textEdit.copy)
+        self.actionPaste.triggered.connect(self.textEdit.paste)
         self.file_list = QListWidget()
 
         for i in range(1, 7):
