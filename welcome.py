@@ -11,7 +11,7 @@ from pathlib import Path
 class ProjectSelectionWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        loadUi("select.ui", self)
+        loadUi(f"{Path(__file__).parent}/ui/select.ui", self)
         self.setWindowTitle("Добро пожаловать!")
         self.setWindowIcon(QIcon('icon.png'))
         self.selectButton.clicked.connect(self.select_project_folder)
@@ -42,7 +42,7 @@ class ProjectSelectionWindow(QMainWindow):
 class ThemeDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi("themeDialog.ui", self)
+        loadUi(f'{Path(__file__).parent}/ui/themeDialog.ui', self)
         self.setWindowTitle("Выбор темы")
 
         self.setStyleSheet(Path(f'{Path(__file__).parent}/Styles/Dark.qss').read_text(encoding='utf-8'))

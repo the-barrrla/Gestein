@@ -14,7 +14,7 @@ from watcher import ProjectFolderWatcher
 class MarkdownEditor(QMainWindow):
     def __init__(self, path=None):
         super().__init__()
-        loadUi("main.ui", self)
+        loadUi(f'{Path(__file__).parent}/ui/main.ui', self)
         self.setWindowTitle("Gestein")
         self.setWindowIcon(QIcon('icon.png'))
         self.current_dir_path = path
