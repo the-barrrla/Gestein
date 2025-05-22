@@ -11,7 +11,6 @@ from PyQt6.QtWidgets import QMessageBox
 
 
 if __name__ == "__main__":
-    os.environ['QTWEBENGINE_CHROMIUM_FLAGS'] = '--disable-gpu-compositing'
     app = QApplication(sys.argv)
 
     config_path = "config.json"
