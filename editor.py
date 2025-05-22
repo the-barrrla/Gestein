@@ -14,9 +14,9 @@ from watcher import ProjectFolderWatcher
 class MarkdownEditor(QMainWindow):
     def __init__(self, path=None):
         super().__init__()
-        loadUi(f'{Path(__file__).parent}/ui/main.ui', self)
+        loadUi('ui/main.ui', self)
         self.setWindowTitle("Gestein")
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('icons/icon.png'))
         self.current_dir_path = path
         self.recent_files = []
 
@@ -84,7 +84,7 @@ class MarkdownEditor(QMainWindow):
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
-        self.setStyleSheet(Path(f'{Path(__file__).parent}/Styles/{name}.qss').read_text(encoding='utf-8'))
+        self.setStyleSheet(Path(f'Styles/{name}.qss').read_text(encoding='utf-8'))
 
 
 
@@ -254,36 +254,31 @@ class MarkdownEditor(QMainWindow):
             QMessageBox.critical(self, "Ошибка", f"Не удалось открыть файл:\n{e}")
 
     def load_dir(self):
-        config_path = "config.json"
-        if os.path.exists(config_path):
-            with open(config_path, "r", encoding="utf-8") as f:
-                config = json.load(f)
-        else:
-            QMessageBox.warning(self, "Ошибка", "Файл конфигурации не найден.")
-            return
+        self.save_markdown_file()
 
-        folder_path = QFileDialog.getExistingDirectory(self, "Выберите папку проекта")
+        config_path = "config.json"
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+
+        desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+        folder_path = QFileDialog.getExistingDirectory(self, "Выберите папку проекта", desktop_path)
         if not folder_path:
             return
         config["kartei"] = folder_path
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
-        try:
-            self.textEdit.clear()
-            print('dir', folder_path)
-            self.build_project_tree(folder_path)
-            self.setWindowTitle("Gestein")
-            self.current_file_path = None
-            self.textEdit.setPlaceholderText("Выберите файл для редактирования")
-            self.textEdit.setReadOnly(True)
+        self.textEdit.clear()
+        self.setWindowTitle("Gestein")
+        self.current_file_path = None
+        self.textEdit.setPlaceholderText("Выберите файл для редактирования")
+        self.textEdit.setReadOnly(True)
 
-            self.watcher = ProjectFolderWatcher(folder_path)
-            self.watcher.file_changed.connect(self.handle_folder_change)
-            self.watcher.start()
+        self.build_project_tree(folder_path)
 
-        except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Не удалось открыть папку или файл:\n{e}")
+        self.watcher = ProjectFolderWatcher(folder_path)
+        self.watcher.file_changed.connect(self.handle_folder_change)
+        self.watcher.start()
 
     def save_markdown_file(self):
         if self.current_file_path:
@@ -354,6 +349,16 @@ class MarkdownEditor(QMainWindow):
 
     def handle_folder_change(self):
         self.build_project_tree(self.current_dir_path)
+
+    def load_config(self):
+        config_path = "config.json"
+        with open(config_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    def save_config(self, config):
+        config_path = "config.json"
+        with open(config_path, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4)
 
     def closeEvent(self, event):
         if hasattr(self, 'watcher'):
