@@ -23,7 +23,7 @@ class MarkdownEditor(QMainWindow):
         super().__init__()
         loadUi("resources/ui/main.ui", self)
         self.setWindowTitle("Gestein")
-        self.setWindowIcon(QIcon('../resources/icons/icon.png'))
+        self.setWindowIcon(QIcon('resources/icons/icon.png'))
         self.current_dir_path = path
         self.recent_files = []
 

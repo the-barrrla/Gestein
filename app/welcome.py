@@ -13,7 +13,7 @@ class ProjectSelectionWindow(QMainWindow):
         super().__init__()
         loadUi(f"{Path(__file__).parent.parent}/resources/ui/select.ui", self)
         self.setWindowTitle("Добро пожаловать!")
-        self.setWindowIcon(QIcon('/"resources"/"icons"/"icon.png"'))
+        self.setWindowIcon(QIcon('resources/icons/icon.png'))
         self.selectButton.clicked.connect(self.select_project_folder)
 
     def select_project_folder(self):
@@ -47,7 +47,7 @@ class ThemeDialog(QDialog):
         loadUi(f'{Path(__file__).parent.parent}'
                f'/resources/ui/themeDialog.ui', self)
         self.setWindowTitle("Выбор темы")
-
+        self.setWindowIcon(QIcon('resources/icons/icon.png'))
         self.setStyleSheet(Path(f'{Path(__file__).parent.parent}'
                                 f'/resources/Styles/Dark.qss')
                            .read_text(encoding='utf-8'))
