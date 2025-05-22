@@ -1,7 +1,7 @@
 import json
 import os
 import re
-
+import time
 import markdown
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
@@ -250,11 +250,23 @@ class MarkdownEditor(QMainWindow):
 
 
     def export_to_pdf(self):
+        md_text = self.textEdit.toPlainText()
+        lines = md_text.splitlines()
+        html_lines = []
+        for line in lines:
+            html = markdown.markdown(line).replace("<p>", "").replace("</p>", "")
+            html_lines.append(f"<div>{html}</div>")
+        html_content = "\n".join(html_lines)
+
+        self.webView.setHtmlContent(html_content, highlight=False)
+
+        desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
         file_path, _ = QFileDialog.getSaveFileName(
-            self, "Сохранить как PDF", "", "PDF Files (*.pdf);;All Files (*)")
+            self, "Сохранить как PDF", desktop_path, "PDF Files (*.pdf);;All Files (*)")
         if file_path:
             self.webView.export_to_pdf(file_path)
             QMessageBox.information(self, "Успех", "PDF успешно сохранён.")
+
     def make_bold(self):
         cursor = self.textEdit.textCursor()
         if cursor.hasSelection():
@@ -292,7 +304,7 @@ class MarkdownEditor(QMainWindow):
             else:
                 cls = ""
             html_lines.append(f"<div class='{cls}'>{html}</div>")
-        self.webView.setHtmlContent("\n".join(html_lines))
+        self.webView.setHtmlContent("\n".join(html_lines), highlight=True)
 
     def handle_folder_change(self):
         self.build_project_tree(self.current_dir_path)

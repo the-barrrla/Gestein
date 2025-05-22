@@ -10,7 +10,9 @@ class EditableWebEngineView(QWebEngineView):  # html window
     def generate_full_html(self, body_content):
         return HTML_TEMPLATE.format(body_content=body_content)
 
-    def setHtmlContent(self, html_content):
+    def setHtmlContent(self, html_content, highlight=True):
+        if not highlight:
+            html_content = html_content.replace("class='active-line'", "")
         self.setHtml(self.generate_full_html(html_content))
 
     def export_to_pdf(self, file_path):
