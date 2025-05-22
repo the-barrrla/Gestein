@@ -17,7 +17,7 @@ HTML_TEMPLATE = """
                 h5 {{ font-size: 1.2em; }}
                 h6 {{ font-size: 1.0em; }}
 
-                p {{ font-size: 1.0em; line-height: 0; }}
+                p {{ font-size: 1.0em; line-height: 1.0; }}
                 ul {{ padding-left: 20px; }}
                 a {{ color: #0066cc; text-decoration: none; }}
                 a:hover {{ text-decoration: underline; }}

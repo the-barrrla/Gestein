@@ -1,0 +1,17 @@
+Index: config.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{\r\n    \"kartei\": \"\",\r\n    \"lastOpenFile\": \"\"\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/config.json b/config.json
+--- a/config.json	(revision 5e29daee91b5c1ec4500f9634caf95172952bd32)
++++ b/config.json	(date 1747904644852)
+@@ -1,4 +1,4 @@
+ {
+-    "kartei": "",
++    "kartei": "C:/Users/User/Desktop/gest",
+     "lastOpenFile": ""
+ }
+\ No newline at end of file
